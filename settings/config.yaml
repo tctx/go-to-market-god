@@ -1,4 +1,4 @@
 # settings/config.yaml
 app:
-  name: hubspot-record-adder
-  port: 0            # 0 = “let OS pick a free port”
+  name: go-to-market-god
+  port: 0            # 0 = "let OS pick a free port"
