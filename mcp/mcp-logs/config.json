@@ -1,0 +1,7 @@
+{
+    "auth_token": "5865c6099c695ad5ad61044e782e4610233a7a200049dd692d6792b1e800a3c0",
+    "log_router_location": "/logs",
+    "dev_urls": ["http://localhost:8000"],
+    "log_limit_mb": 1,
+    "router_port": 4001
+}

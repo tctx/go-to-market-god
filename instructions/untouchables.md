@@ -1,0 +1,1 @@
+> untouchables.md > a list of things the AI isn't allowed to change. Hopefully we can always include this in context and limit the amount of erroneously-rewriting-code flubs that modern LLM-based AIs are notorious for.

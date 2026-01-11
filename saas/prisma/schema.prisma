@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IntegrationType {
+  HUBSPOT
+  GMAIL
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime     @default(now())
+  memberships  Membership[]
+}
+
+model Organization {
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  memberships  Membership[]
+  integrations Integration[]
+  oauthStates  OAuthState[]
+}
+
+model Membership {
+  id        String       @id @default(cuid())
+  userId    String
+  orgId     String
+  role      String
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([userId, orgId])
+}
+
+model Integration {
+  id        String          @id @default(cuid())
+  orgId     String
+  type      IntegrationType
+  status    String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  token     IntegrationToken?
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, type])
+}
+
+model IntegrationToken {
+  id             String   @id @default(cuid())
+  integrationId  String   @unique
+  accessTokenEnc String
+  refreshTokenEnc String?
+  tokenType      String?
+  scope          String?
+  expiresAt      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  integration    Integration @relation(fields: [integrationId], references: [id])
+}
+
+model OAuthState {
+  id         String          @id @default(cuid())
+  orgId      String
+  type       IntegrationType
+  stateHash  String
+  redirectUri String
+  createdAt  DateTime        @default(now())
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([stateHash])
+}

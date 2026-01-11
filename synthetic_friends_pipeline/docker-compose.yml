@@ -1,0 +1,6 @@
+services:
+  sf-pipeline:
+    build: .
+    env_file: .env
+    ports:
+      - "8099:8099"

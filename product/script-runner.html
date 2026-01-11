@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HubSpot Script Runner</title>
+  <style>
+    :root {
+      --bg: #0b1021;
+      --panel: #111831;
+      --border: #1f2949;
+      --text: #e4e9ff;
+      --muted: #9fb0d8;
+      --accent: #7dd3fc;
+      --danger: #fca5a5;
+      --success: #a7f3d0;
+      --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at 20% 20%, rgba(125, 211, 252, 0.08), transparent 25%),
+                  radial-gradient(circle at 80% 0%, rgba(167, 243, 208, 0.06), transparent 35%),
+                  var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: -0.01em;
+    }
+    p {
+      margin: 4px 0 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    input, textarea, button {
+      width: 100%;
+      font: inherit;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0c1226;
+      color: var(--text);
+      padding: 10px 12px;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.2);
+    }
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      line-height: 1.4;
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .row button {
+      width: auto;
+      padding: 10px 16px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(120deg, #60a5fa, #22d3ee);
+      color: #031024;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25);
+    }
+    .row button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .row small {
+      color: var(--muted);
+    }
+    .file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .file-row button {
+      width: auto;
+      padding: 8px 12px;
+      background: #1d2744;
+      border: 1px solid var(--border);
+      color: var(--text);
+      box-shadow: none;
+    }
+    .status {
+      margin-left: 10px;
+      font-weight: 600;
+    }
+    .status[data-state="error"] { color: var(--danger); }
+    .status[data-state="success"] { color: var(--success); }
+    pre {
+      background: #0b1021;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-top: 12px;
+      min-height: 140px;
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    }
+    code {
+      background: #0f172a;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>HubSpot Script Runner</h1>
+    <p>Paste the JS that Atlas generates, drop your HubSpot token (optional), and click run. Execution happens locally in Node; nothing is sent anywhere else.</p>
+
+    <div class="field">
+      <label for="token">HubSpot private app token (optional override)</label>
+      <input id="token" type="password" placeholder="pat-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+      <small class="muted">Leave blank to use your saved local token; we rewrite any <code>HUBSPOT_TOKEN</code> scaffolding (even the "prompt for token" template) before running.</small>
+    </div>
+
+    <div class="field">
+      <div class="file-row">
+        <label for="code">Generated JS</label>
+        <div class="row" style="gap:6px; justify-content:flex-end; width:auto;">
+          <input type="file" id="file-input" accept=".js,.txt" style="display:none">
+          <button type="button" id="load-file">Load .js file</button>
+        </div>
+      </div>
+      <textarea id="code" placeholder="// Paste the entire Atlas-generated script here (IIFE is fine)"></textarea>
+    </div>
+
+    <div class="row">
+      <button id="run-btn" type="button">Run against HubSpot</button>
+      <span class="status" id="status" data-state="idle">Idle</span>
+    </div>
+    <small class="muted">The server enforces a 45s timeout and captures console output below.</small>
+
+    <pre id="output" aria-live="polite">Waiting for input...</pre>
+  </main>
+
+  <script>
+    const runBtn = document.getElementById('run-btn');
+    const statusEl = document.getElementById('status');
+    const outputEl = document.getElementById('output');
+    const codeEl = document.getElementById('code');
+    const tokenEl = document.getElementById('token');
+    const fileInput = document.getElementById('file-input');
+    const loadBtn = document.getElementById('load-file');
+    const describeTokenSource = (source) => {
+      if (source === 'request') return 'from input';
+      if (source === 'env') return 'from env';
+      if (source === 'local') return 'saved local';
+      return '';
+    };
+
+    const setStatus = (text, state = 'idle') => {
+      statusEl.textContent = text;
+      statusEl.dataset.state = state;
+    };
+
+    const renderLogs = (logs = []) => {
+      if (!logs.length) {
+        outputEl.textContent = 'No console output.';
+        return;
+      }
+      outputEl.textContent = logs
+        .map((log) => {
+          const ts = log.ts ? new Date(log.ts).toLocaleTimeString() : '';
+          return `${ts ? '[' + ts + '] ' : ''}${log.level?.toUpperCase() || 'LOG'}: ${log.message || ''}`;
+        })
+        .join('\n');
+    };
+
+    const runScript = async () => {
+      const code = codeEl.value.trim();
+      const token = tokenEl.value.trim();
+      if (!code) {
+        setStatus('Paste a script first', 'error');
+        outputEl.textContent = 'Paste the Atlas-generated JS into the text area.';
+        return;
+      }
+
+      runBtn.disabled = true;
+      setStatus('Running...', 'idle');
+      outputEl.textContent = 'Executing…';
+
+      try {
+        const res = await fetch('/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, token }),
+        });
+        const data = await res.json();
+        renderLogs(data.logs);
+
+        if (data.ok) {
+          const tokenSource = describeTokenSource(data.tokenSource);
+          const tokenNote = data.tokenInjected
+            ? ` (token ${data.tokenReplaced ? 'overrode template' : 'applied'}${tokenSource ? `, ${tokenSource}` : ''})`
+            : '';
+          setStatus(`Success${tokenNote}`, 'success');
+        } else {
+          setStatus(data.error || 'Failed', 'error');
+        }
+      } catch (error) {
+        setStatus('Request failed', 'error');
+        outputEl.textContent = error?.message || String(error);
+      } finally {
+        runBtn.disabled = false;
+      }
+    };
+
+    runBtn.addEventListener('click', runScript);
+
+    loadBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        codeEl.value = e.target?.result || '';
+      };
+      reader.readAsText(file);
+    });
+
+    codeEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      codeEl.style.borderColor = '#7dd3fc';
+    });
+
+    codeEl.addEventListener('dragleave', () => {
+      codeEl.style.borderColor = '#1f2949';
+    });
+
+    codeEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      codeEl.style.borderColor = '#1f2949';
+      const file = e.dataTransfer.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          codeEl.value = ev.target?.result || '';
+        };
+        reader.readAsText(file);
+        return;
+      }
+      const text = e.dataTransfer.getData('text/plain');
+      if (text) codeEl.value = text;
+    });
+  </script>
+</body>
+</html>

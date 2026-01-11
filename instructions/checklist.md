@@ -1,0 +1,3 @@
+Please review prd.md, style.md, user-journey.md and all other docs in instructions. Then come up with an extremely detailed, comprehensive, and verbose checklist.md file that we will use to track our progress building out this app. Similar to how the prd is structured, make sure that a portion of this doc is broken out by view so that when our AI engineer is coding, it knows exactly what every page should look like and contain. This file will be a living/breathing document that we will update as we go. It should feel alive and comprehensive, allowing us to track our progress in the most minute of detail. Please make this file markdown .md and avoid tables as they are less machine readable.
+
+// end checklist //

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Synthetic Friends Gmail Tracker",
+  "version": "0.1.0",
+  "description": "Tracks Gmail sends/receives/opens and posts events to the Synthetic Friends pipeline.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html"
+}

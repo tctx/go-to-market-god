@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Synthetic Friends Gmail Tracker</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: "IBM Plex Sans", "Segoe UI", Tahoma, sans-serif;
+        margin: 0;
+        padding: 24px;
+        background: #f5f2ec;
+        color: #1d1c1a;
+      }
+      .card {
+        max-width: 720px;
+        background: #fffef9;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(30, 24, 10, 0.12);
+        border: 1px solid #e7e0d5;
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 24px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin: 16px 0 6px;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d4c9b8;
+        font-size: 14px;
+      }
+      .row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .row > div {
+        flex: 1 1 260px;
+      }
+      .toggles {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px 18px;
+      }
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        background: #1f5a4b;
+        color: #f8f4ec;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #3c3a35;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Synthetic Friends Gmail Tracker</h1>
+      <p>Connect Gmail activity to the Synthetic Friends pipeline and HubSpot.</p>
+
+      <div class="row">
+        <div>
+          <label for="pipelineUrl">Pipeline URL</label>
+          <input id="pipelineUrl" type="text" placeholder="http://localhost:8099" />
+        </div>
+        <div>
+          <label for="trackingBaseUrl">Tracking Base URL</label>
+          <input id="trackingBaseUrl" type="text" placeholder="http://localhost:8099" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="trackingToken">Tracking Token (optional)</label>
+          <input id="trackingToken" type="password" placeholder="shared secret" />
+        </div>
+        <div>
+          <label for="userEmail">Your Email (optional)</label>
+          <input id="userEmail" type="text" placeholder="you@company.com" />
+        </div>
+      </div>
+
+      <div class="toggles">
+        <label class="toggle"><input type="checkbox" id="trackSends" /> Track sent emails</label>
+        <label class="toggle"><input type="checkbox" id="trackReceives" /> Track received emails</label>
+        <label class="toggle"><input type="checkbox" id="trackClicks" /> Track link clicks</label>
+      </div>
+
+      <button id="save">Save settings</button>
+      <div class="status" id="status"></div>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

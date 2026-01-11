@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Synthetic Friends GTM Console</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <div class="page">
+      <header class="hero">
+        <span class="hero-badge">Synthetic Friends</span>
+        <h1>GTM Console for HubSpot Ops</h1>
+        <p>
+          Start clean, ship fast. Connect HubSpot, create the schema, and run enrichment
+          scripts in one place.
+        </p>
+        <div class="hero-actions">
+          <button class="btn ghost" id="healthCheck">Check server</button>
+          <span class="status-pill" id="healthStatus">Idle</span>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card card-spotlight">
+          <div class="card-header">
+            <h2>1. Connect HubSpot</h2>
+            <p>Use the official HubSpot login or store a private app token locally.</p>
+          </div>
+          <div class="oauth-panel">
+            <div class="oauth-row">
+              <button class="btn" id="oauthConnect">Connect with HubSpot</button>
+              <button class="btn ghost" id="oauthRefresh">Refresh token</button>
+              <span class="status-pill" id="oauthStatus">OAuth idle</span>
+            </div>
+            <div class="hint">
+              OAuth redirect URL: <code id="oauthRedirect">Loading...</code>
+            </div>
+            <div class="hint" id="oauthConfigHint"></div>
+          </div>
+          <div class="divider">or use a manual token</div>
+          <div class="form-row">
+            <label for="tokenInput">HubSpot Private App Token</label>
+            <div class="input-row">
+              <input id="tokenInput" type="password" placeholder="pat-..." autocomplete="off" />
+              <button class="btn secondary" id="toggleToken">Show</button>
+            </div>
+            <div class="hint">Token stays in your browser storage and is only sent when you run an action.</div>
+          </div>
+          <div class="button-row">
+            <button class="btn" id="saveToken">Save token</button>
+            <button class="btn secondary" id="pingHubSpot">Test connection</button>
+            <span class="status-pill" id="tokenStatus">Not saved</span>
+          </div>
+          <div class="output" id="pingOutput"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>2. Initialize HubSpot Schema</h2>
+            <p>Create the GTM and pipeline properties your tools expect.</p>
+          </div>
+          <div class="form-row">
+            <div class="checkbox-row">
+              <label><input type="checkbox" id="includeContacts" checked /> Contacts</label>
+              <label><input type="checkbox" id="includeCompanies" checked /> Companies</label>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="btn" id="initProperties">Create properties</button>
+            <span class="status-pill" id="initStatus">Idle</span>
+          </div>
+          <div class="output output-scroll" id="initOutput"></div>
+        </section>
+
+        <section class="card card-wide">
+          <div class="card-header">
+            <h2>3. Run Enrichment Script</h2>
+            <p>Paste your Atlas-generated script or load `add-to-hubspot.js`, then run.</p>
+          </div>
+          <div class="form-row">
+            <div class="input-row">
+              <input type="file" id="scriptFile" accept=".js" />
+              <button class="btn secondary" id="loadSample">Load active script</button>
+            </div>
+            <textarea id="scriptInput" rows="14" placeholder="// Paste add-to-hubspot.js here"></textarea>
+          </div>
+          <div class="button-row">
+            <button class="btn" id="runScript">Run script</button>
+            <button class="btn ghost" id="clearLogs">Clear logs</button>
+            <span class="status-pill" id="runStatus">Idle</span>
+          </div>
+          <div class="output output-scroll" id="runOutput"></div>
+        </section>
+
+        <section class="card card-wide card-spotlight">
+          <div class="card-header">
+            <h2>4. Menu Hunter</h2>
+            <p>AI-powered menu extraction that works on any restaurant website. Handles ordering flows, location selection, and dynamic content automatically.</p>
+          </div>
+
+          <div class="form-row">
+            <label>Input Mode</label>
+            <div class="checkbox-row">
+              <label><input type="radio" name="huntMode" value="single" id="huntModeSingle" checked /> Single URL</label>
+              <label><input type="radio" name="huntMode" value="batch" id="huntModeBatch" /> Batch URLs</label>
+            </div>
+          </div>
+
+          <div class="form-row" id="huntSingleRow">
+            <label for="huntUrl">Restaurant Website URL</label>
+            <input id="huntUrl" type="text" placeholder="https://torchystacos.com" />
+          </div>
+
+          <div class="form-row" id="huntBatchRow" style="display: none;">
+            <label for="huntUrls">URLs (one per line)</label>
+            <textarea id="huntUrls" rows="5" placeholder="https://torchystacos.com&#10;https://localcoffee.com&#10;https://restaurant.com"></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="huntLocation">Location (for ordering systems)</label>
+            <input id="huntLocation" type="text" placeholder="Austin TX" value="Austin TX" />
+          </div>
+
+          <div class="form-row">
+            <label for="huntFormat">Output Format</label>
+            <select id="huntFormat" style="padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: white; font-size: 0.95rem; width: 100%;">
+              <option value="detailed">Detailed - With prices, ingredients, and options</option>
+              <option value="simple">Simple - Name, description, price only</option>
+            </select>
+          </div>
+
+          <div class="button-row">
+            <button class="btn" id="runHunt">Hunt Menu</button>
+            <button class="btn ghost" id="clearHunt">Clear</button>
+            <span class="status-pill" id="huntStatus">Idle</span>
+          </div>
+
+          <div class="output output-scroll" id="huntOutput" style="max-height: 500px;"></div>
+        </section>
+
+        <section class="card card-wide">
+          <div class="card-header">
+            <h2>5. Web Extraction (Legacy)</h2>
+            <p>Extract structured data from websites using AI. Get menus, business info, or custom data.</p>
+          </div>
+
+          <div class="form-row">
+            <label>Input Mode</label>
+            <div class="checkbox-row">
+              <label><input type="radio" name="extractMode" value="single" id="extractModeSingle" checked /> Single URL</label>
+              <label><input type="radio" name="extractMode" value="csv" id="extractModeCsv" /> CSV Upload</label>
+              <label><input type="radio" name="extractMode" value="hubspot" id="extractModeHubspot" /> HubSpot Companies</label>
+            </div>
+          </div>
+
+          <div class="form-row" id="extractSingleRow">
+            <label for="extractUrl">Website URL</label>
+            <input id="extractUrl" type="text" placeholder="https://restaurant.com/menu" />
+          </div>
+
+          <div class="form-row" id="extractCsvRow" style="display: none;">
+            <label>CSV File (must have url, website, or domain column)</label>
+            <input type="file" id="extractCsvFile" accept=".csv" />
+            <div class="hint" id="extractCsvPreview"></div>
+          </div>
+
+          <div class="form-row" id="extractHubspotRow" style="display: none;">
+            <button class="btn secondary" id="loadHubspotCompanies">Load companies from HubSpot</button>
+            <div class="hint" id="extractHubspotPreview"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="extractPreset">Extraction Type</label>
+            <select id="extractPreset" style="padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: white; font-size: 0.95rem; width: 100%;">
+              <option value="menu">Menu - Restaurant menu with sections and prices</option>
+              <option value="business-info">Business Info - Owner, founding story, contact</option>
+              <option value="custom">Custom - Define your own prompt</option>
+            </select>
+          </div>
+
+          <div class="form-row" id="extractCustomRow" style="display: none;">
+            <label for="extractPrompt">Custom Extraction Prompt</label>
+            <textarea id="extractPrompt" rows="4" placeholder="Extract all product names and prices from this page..."></textarea>
+            <label for="extractFormat">Output Format (JSON example)</label>
+            <textarea id="extractFormat" rows="4" placeholder='{"productName": "string", "price": "string", "description": "string"}'></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="checkbox-row">
+              <label><input type="checkbox" id="extractWriteHubspot" /> Write results to HubSpot</label>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn" id="runExtraction">Extract Data</button>
+            <button class="btn ghost" id="clearExtraction">Clear</button>
+            <span class="status-pill" id="extractStatus">Idle</span>
+          </div>
+
+          <div class="output output-scroll" id="extractOutput" style="max-height: 400px;"></div>
+        </section>
+
+        <section class="card card-wide card-spotlight">
+          <div class="card-header">
+            <h2>6. LinkedIn Outreach</h2>
+            <p>Find contacts at target companies, extract profiles, and send personalized connection requests. Session persists via cookies.</p>
+          </div>
+
+          <!-- Session Status -->
+          <div class="oauth-panel">
+            <div class="oauth-row">
+              <button class="btn" id="linkedinLogin">Login to LinkedIn</button>
+              <button class="btn ghost" id="linkedinLogout">Logout</button>
+              <span class="status-pill" id="linkedinStatus">Not connected</span>
+            </div>
+            <div class="hint" id="linkedinHint">Set LINKEDIN_EMAIL and LINKEDIN_PASSWORD in .env for auto-login.</div>
+          </div>
+
+          <!-- Action Mode -->
+          <div class="form-row">
+            <label>Action</label>
+            <div class="checkbox-row">
+              <label><input type="radio" name="linkedinMode" value="search" id="linkedinModeSearch" checked /> Search People</label>
+              <label><input type="radio" name="linkedinMode" value="company" id="linkedinModeCompany" /> Company Contacts</label>
+              <label><input type="radio" name="linkedinMode" value="profile" id="linkedinModeProfile" /> Extract Profile</label>
+              <label><input type="radio" name="linkedinMode" value="connect" id="linkedinModeConnect" /> Send Connection</label>
+              <label><input type="radio" name="linkedinMode" value="message" id="linkedinModeMessage" /> Send Message</label>
+            </div>
+          </div>
+
+          <!-- Search Mode -->
+          <div id="linkedinSearchRow" class="form-row">
+            <label for="linkedinSearchQuery">Search Query</label>
+            <input id="linkedinSearchQuery" type="text" placeholder="Marketing Manager Austin" />
+            <label for="linkedinCompanyFilter">Company Filter (optional)</label>
+            <input id="linkedinCompanyFilter" type="text" placeholder="Company name" />
+          </div>
+
+          <!-- Company Mode -->
+          <div id="linkedinCompanyRow" class="form-row" style="display: none;">
+            <label for="linkedinCompanyName">Company Name</label>
+            <input id="linkedinCompanyName" type="text" placeholder="Acme Corp" />
+            <label for="linkedinRoles">Target Roles (comma-separated)</label>
+            <input id="linkedinRoles" type="text" placeholder="CEO, CTO, VP Marketing" />
+          </div>
+
+          <!-- Profile Mode -->
+          <div id="linkedinProfileRow" class="form-row" style="display: none;">
+            <label for="linkedinProfileUrl">Profile URL or Name</label>
+            <input id="linkedinProfileUrl" type="text" placeholder="https://linkedin.com/in/username or 'John Doe at Company'" />
+          </div>
+
+          <!-- Connect/Message Mode -->
+          <div id="linkedinMessageRow" class="form-row" style="display: none;">
+            <label for="linkedinTargetUrl">Profile URL</label>
+            <input id="linkedinTargetUrl" type="text" placeholder="https://linkedin.com/in/username" />
+            <label for="linkedinMessage">Message / Connection Note</label>
+            <textarea id="linkedinMessage" rows="4" placeholder="Your message here..."></textarea>
+            <div class="checkbox-row">
+              <label><input type="checkbox" id="linkedinUseAI" /> Enhance with AI using HubSpot context</label>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="form-row">
+            <label>Options</label>
+            <div class="checkbox-row">
+              <label><input type="checkbox" id="linkedinSaveToHubspot" /> Save results to HubSpot</label>
+            </div>
+          </div>
+
+          <!-- Limit -->
+          <div class="form-row">
+            <label for="linkedinLimit">Max Results</label>
+            <input id="linkedinLimit" type="number" value="10" min="1" max="50" style="width: 100px;" />
+          </div>
+
+          <!-- Actions -->
+          <div class="button-row">
+            <button class="btn" id="runLinkedin">Execute</button>
+            <button class="btn ghost" id="clearLinkedin">Clear</button>
+            <span class="status-pill" id="linkedinActionStatus">Idle</span>
+          </div>
+
+          <!-- Output -->
+          <div class="output output-scroll" id="linkedinOutput" style="max-height: 500px;"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div>
+          <strong>Tip:</strong> Run schema setup first, then use the script runner for GTM enrichment.
+        </div>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,117 @@
+# Best Practices for Development
+
+## Expert Developer Guidelines
+
+### Prioritize These Qualities:
+1. **Minimal** - Absolute minimum code needed.
+2. **Self-documenting** - Code explains itself through:
+   - Precise naming (verbs for functions, nouns for variables).
+   - Single-responsibility components.
+   - Obvious data flow.
+   - Add short comments when necessary.
+3. **Type-Exact** - Strict TypeScript types with zero `any`.
+4. **Secure** - Built-in security for auth/data handling.
+5. **Performant** - Follow optimization guides relevant to the project framework (e.g., Next.js).
+
+---
+
+## Planning Before Coding:
+Make a plan inside a `<thinking>` tag:
+1. Identify the core requirement.
+2. Consider three implementation approaches.
+3. Choose the simplest that meets the needs.
+4. Verify with these questions:
+   - Can this be split into smaller functions?
+   - Are there unnecessary abstractions?
+   - Will this be clear to a junior developer?
+
+Example:
+```html
+<thinking>
+Let me think through this step by step.
+</thinking>
+```
+
+---
+
+## Key Principles
+1. Write concise, technical code with accurate examples.
+2. Use functional and declarative programming patterns; avoid classes unless explicitly necessary.
+3. Prefer iteration and modularization over code duplication.
+4. Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+5. Structure files: exported components, subcomponents, helpers, static content, and types.
+
+---
+
+## Examples of Good vs. Bad Code:
+
+### Bad:
+```typescript
+const processData = (input: unknown) => { /* ... */ }
+```
+
+### Good:
+```typescript
+const formatUserDisplayName = (user: User): string => {
+  // Combines first/last names with fallback to email
+  return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+}
+```
+
+---
+
+## Project Structure
+Include wayfinding so our app knows where to find everything.
+
+### Example Structure:
+```plaintext
+instructions (folder where we can find everything we need as far as wayfinding is concerned)
+├── apis (folder describing APIs you can reference)
+│   ├── openai-api.md
+│   ├── perplexity-api.md
+├── ui (folder describing our UI)
+├── branding (folder describing our branding)
+├── wireframes (folder with wireframe images)
+├── prd.md (Product Requirements Document)
+├── checklist.md (Comprehensive task checklist)
+├── user-journey.md (Detailed user journeys)
+├── tools (folder with all-purpose tools, use this folder to reference tools you can use like a human would, e.g. browser, notepad, google, screenshot, etc.)
+.cursorrules (coding guidelines file)
+.env (with credentials prefilled already):
+```
+### Environment Variables (`.env`):
+```plaintext
+GOOGLE_API_KEY=your_google_api_key
+OPENAI_API_KEY=your_openai_api_key
+DEEPGRAM_API_KEY=your_deepgram_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+HUBSPOT_TOKEN=your_hubspot_token
+```
+
+---
+
+## Workflow Rules for AI:
+
+### Pre-Change Process:
+1. **Review Documentation**:
+   - `ui`: Ensure changes align with the UI guidelines.
+   - `branding`: Confirm compliance with branding standards.
+   - `user-journey.md`: Verify no disruption in user flow.
+   - `prd.md`: Check alignment with product requirements.
+   - `checklist.md`: Identify relevant tasks related to the change.
+
+2. **Log Completion**: AI must log that it reviewed these files with a checkmark next to each.
+
+### Post-Change Process:
+1. **Generate Tests**:
+   - Create comprehensive test cases (unit, integration, and UI levels where applicable).
+   - Iterate until all tests pass successfully.
+
+2. **Update Checklist**:
+   - Mark completed tasks in `checklist.md` as **Done**.
+   - Add new tasks based on insights gained during testing.
+
+3. **Log Completion**:
+   - AI must log that it updated the checklist with a checkmark next to the message.
+
+---

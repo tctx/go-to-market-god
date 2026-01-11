@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "HubSpot Atlas Enricher",
+  "version": "0.1.0",
+  "description": "Injects a one-click Atlas enrichment button on HubSpot records. Sends page context + mega prompt to GPT and executes the returned script via the local runner.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "https://app.hubspot.com/*",
+    "http://localhost:5050/*",
+    "http://127.0.0.1:5050/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.hubspot.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["mega-prompt.md"],
+      "matches": ["https://app.hubspot.com/*"]
+    }
+  ]
+}
